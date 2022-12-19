@@ -50,11 +50,6 @@ class ConfigureTwsApiPortTask implements ConfigurationAction{
             if (currentPort == portNumber) {
                 Utils.logToConsole("TWS API socket port is already set to " + tf.getText());
             } else {
-                if (!MainWindowManager.mainWindowManager().isGateway()) {
-                    JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
-                    if (cb == null) throw new IbcException("could not find Enable ActiveX checkbox");
-                    if (cb.isSelected()) ConfigDialogManager.configDialogManager().setApiConfigChangeConfirmationExpected();
-                }
                 Utils.logToConsole("TWS API socket port was set to " + tf.getText());
                 tf.setText(Integer.toString(portNumber));
                 Utils.logToConsole("TWS API socket port now set to " + tf.getText());

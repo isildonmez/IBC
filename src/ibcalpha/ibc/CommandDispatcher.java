@@ -26,11 +26,9 @@ class CommandDispatcher
         implements Runnable {
 
     private final CommandChannel mChannel;
-    private final boolean mIsGateway;
 
-    CommandDispatcher(CommandChannel channel, boolean isGateway) {
+    CommandDispatcher(CommandChannel channel) {
         mChannel = channel;
-        mIsGateway = isGateway;
     }
 
     @Override public void run() {
@@ -62,13 +60,8 @@ class CommandDispatcher
     }
 
     private void handleEnableAPICommand() {
-        if (mIsGateway) {
-            mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
-            return;
-        }
-
-        // run on the current thread
-        (new ConfigurationTask(new EnableApiTask(mChannel))).execute();
+        mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
+        return;
    }
 
     private void handleReconnectDataCommand() {
@@ -100,7 +93,7 @@ class CommandDispatcher
     }
 
     private void handleStopCommand() {
-        (new StopTask(mChannel, mIsGateway)).run();     // run on the current thread
+        (new StopTask(mChannel)).run();     // run on the current thread
     }
 
 }

@@ -35,7 +35,7 @@ public abstract class LoginManager {
     
     boolean readonlyLoginRequired() {
         boolean readOnly = Settings.settings().getBoolean("ReadOnlyLogin", false);
-        if (readOnly && MainWindowManager.mainWindowManager().isGateway()) {
+        if readOnly {
             Utils.logError("Read-only login not supported by Gateway");
             return false;
         }

@@ -2,19 +2,10 @@ public class IbcTws {
 
     private IbcTws() { }
 
-    public static void main(final String[] args) throws Exception {
-        if (Thread.getDefaultUncaughtExceptionHandler() == null) {
-            Thread.setDefaultUncaughtExceptionHandler(new ibcalpha.ibc.UncaughtExceptionHandler());
-        }
-        checkArguments(args);
-        setupDefaultEnvironment(args, false);
-        load();
-    }
-
-    static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
+    static void setupDefaultEnvironment(final String[] args) throws Exception {
         Settings.initialise(new DefaultSettings(args));
         LoginManager.initialise(new DefaultLoginManager(args));
-        MainWindowManager.initialise(new DefaultMainWindowManager(isGateway));
+        MainWindowManager.initialise(new DefaultMainWindowManager());
         TradingModeManager.initialise(new DefaultTradingModeManager(args));
     }
 
@@ -49,17 +40,15 @@ public class IbcTws {
             TradingModeManager.tradingModeManager().logDiagnosticMessage();
             ConfigDialogManager.configDialogManager().logDiagnosticMessage();
 
-            boolean isGateway = MainWindowManager.mainWindowManager().isGateway();
+            startCommandServer();
 
-            startCommandServer(isGateway);
-
-            startShutdownTimerIfRequired(isGateway);
+            startShutdownTimerIfRequired();
 
             createToolkitListener();
 
             startSavingTwsSettingsAutomatically();
 
-            startTwsOrGateway(isGateway);
+            startTwsOrGateway();
         } catch (IllegalStateException e) {
             if (e.getMessage().equalsIgnoreCase("Shutdown in progress")) {
                 // an exception with this message can occur if a STOP command is
@@ -220,19 +209,18 @@ public class IbcTws {
         }
     }
 
-    private static void startCommandServer(boolean isGateway) {
-        MyCachedThreadPool.getInstance().execute(new CommandServer(isGateway));
+    private static void startCommandServer() {
+        MyCachedThreadPool.getInstance().execute(new CommandServer());
     }
 
-    private static void startShutdownTimerIfRequired(boolean isGateway) {
+    private static void startShutdownTimerIfRequired() {
         Date shutdownTime = getShutdownTime();
         if (! (shutdownTime == null)) {
             long delay = shutdownTime.getTime() - System.currentTimeMillis();
-            Utils.logToConsole((isGateway ? "Gateway" : "TWS") +
-                            " will be shut down at " +
+            Utils.logToConsole("Gateway will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             MyScheduledExecutorService.getInstance().schedule(() -> {
-                MyCachedThreadPool.getInstance().execute(new StopTask(null, isGateway));
+                MyCachedThreadPool.getInstance().execute(new StopTask(null));
             }, delay, TimeUnit.MILLISECONDS);
         }
     }
@@ -254,14 +242,10 @@ public class IbcTws {
         }
     }
 
-    private static void startTwsOrGateway(boolean isGateway) {
+    private static void startTwsOrGateway() {
         Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
         JtsIniManager.initialise(getJtsIniFilePath());
-        if (isGateway) {
-            startGateway();
-        } else {
-            startTws();
-        }
+        startGateway();
 
         int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
         if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();

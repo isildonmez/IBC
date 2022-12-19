@@ -33,10 +33,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JPanel;
 
 public class MyMainWindowManager extends ibcalpha.ibc.DefaultMainWindowManager {
-
-    public MyMainWindowManager(boolean isGateway) {
-        super(isGateway);
-    }
     
     @Override
     public void setMainWindow(JFrame window) {

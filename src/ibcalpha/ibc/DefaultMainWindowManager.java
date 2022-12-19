@@ -34,11 +34,6 @@ import javax.swing.SwingUtilities;
 
 public class DefaultMainWindowManager extends MainWindowManager {
 
-    public DefaultMainWindowManager(boolean isGateway) {
-        this.isGateway = isGateway;
-        message = "constructor parameter isGateway=" + isGateway;
-    }
-
     private volatile JFrame mainWindow = null;
 
     private volatile GetMainWindowTask mainWindowTask;
@@ -46,13 +41,8 @@ public class DefaultMainWindowManager extends MainWindowManager {
     private final Object futureCreationLock = new Object();
     private Future<JFrame> mainWindowFuture;
 
-    private final boolean isGateway;
-    private final String message;
-
     @Override
-    public void logDiagnosticMessage(){
-        Utils.logToConsole("using default main window manager: " + message);
-    }
+    public void logDiagnosticMessage(){}
 
     /**
      * Returns the main window, if necessary blocking the calling thread until
@@ -137,19 +127,9 @@ public class DefaultMainWindowManager extends MainWindowManager {
     }
 
     @Override
-    public boolean isGateway() {
-        return this.isGateway;
-    };
-
-    @Override
     public void setMainWindow(JFrame window) {
-        Utils.logToConsole("Found " + (isGateway ? "Gateway" : "TWS") + " main window");
+        Utils.logToConsole("Found Gateway main window");
         mainWindow = window;
-
-        // For TWS, the main window being opened indicates that login is complete. This is not the case
-        // for the Gateway, because the main window is created right at the start, but the splash frame
-        // being closed indicates that login is complete (see the SplahFrameHandler).
-        if (! isGateway) LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGED_IN);
 
         if (mainWindowTask != null) mainWindowTask.setMainWindow(window);
         mainWindowTask = null;

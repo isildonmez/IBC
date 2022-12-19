@@ -47,11 +47,6 @@ public class ConfigureReadOnlyApiTask implements ConfigurationAction{
             if (readOnlyApiCheckbox.isSelected() == readOnlyApi) {
                 Utils.logToConsole("Read-Only API checkbox is already set to: " + readOnlyApi);
             } else {
-                if (!MainWindowManager.mainWindowManager().isGateway()) {
-                    JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
-                    if (cb == null) throw new IbcException("could not find Enable ActiveX checkbox");
-                    if (cb.isSelected()) ConfigDialogManager.configDialogManager().setApiConfigChangeConfirmationExpected();
-                }
                 readOnlyApiCheckbox.setSelected(readOnlyApi);
                 Utils.logToConsole("Read-Only API checkbox is now set to: " + readOnlyApi);
             }

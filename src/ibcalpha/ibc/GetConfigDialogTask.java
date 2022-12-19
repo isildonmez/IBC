@@ -31,49 +31,36 @@ class GetConfigDialogTask implements Callable<JDialog>{
     private final Lock lock = new ReentrantLock();
     private final Condition gotConfigDialog = lock.newCondition();
     private final Condition gatewayInitialised = lock.newCondition();
-    private final boolean isGateway;
-
-    GetConfigDialogTask(boolean isGateway) {
-        this.isGateway = isGateway;
-    }
 
     @Override
     public JDialog call() throws IbcException, InterruptedException {
         final JFrame mainForm = MainWindowManager.mainWindowManager().getMainWindow();
 
-        if (isGateway) {
-            /*
-             * For the gateway, the main form is loaded right at the start, and long before
-             * the menu items become responsive: any attempt to access the Configure > Settings
-             * menu item (even after it has been enabled) results in an exception being logged
-             * by TWS. 
-             * 
-             * It's not obvious how long we need to wait before the menu becomes responsive. However the splash
-             * frame that appears in front of the gateway main window during initialisation disappears when everything
-             * is ready, and its close can be detected as a frame entitled 'Starting application...' and a Closed event.
-             * 
-             * So we wait for the handler for that frame to call setSplashScreenClosed().
-             * 
-             */
+        /*
+            * For the gateway, the main form is loaded right at the start, and long before
+            * the menu items become responsive: any attempt to access the Configure > Settings
+            * menu item (even after it has been enabled) results in an exception being logged
+            * by TWS. 
+            * 
+            * It's not obvious how long we need to wait before the menu becomes responsive. However the splash
+            * frame that appears in front of the gateway main window during initialisation disappears when everything
+            * is ready, and its close can be detected as a frame entitled 'Starting application...' and a Closed event.
+            * 
+            * So we wait for the handler for that frame to call setSplashScreenClosed().
+            * 
+            */
 
-            lock.lock();
-            try {
-                while (!mGatewayInitialised) {
-                    gatewayInitialised.await();
-                }
-            } finally {
-                lock.unlock();
+        lock.lock();
+        try {
+            while (!mGatewayInitialised) {
+                gatewayInitialised.await();
             }
+        } finally {
+            lock.unlock();
         }
 
         Utils.logToConsole("Invoking config dialog menu");
-        if (isGateway) {
-            if (!Utils.invokeMenuItem(mainForm, new String[] {"Configure", "Settings"})) throw new IbcException("'Configure > Settings' menu item");
-        } else if (Utils.invokeMenuItem(mainForm, new String[] {"Edit", "Global Configuration..."})) /* TWS's Classic layout */ {
-        } else if (Utils.invokeMenuItem(mainForm, new String[] {"File", "Global Configuration..."})) /* TWS's Mosaic layout */ {
-        } else {
-            throw new IbcException("'Edit > Global Configuration' or 'File > Global Configuration' menu items");
-        }
+        if (!Utils.invokeMenuItem(mainForm, new String[] {"Configure", "Settings"})) throw new IbcException("'Configure > Settings' menu item");
 
         lock.lock();
         try {
@@ -97,7 +84,6 @@ class GetConfigDialogTask implements Callable<JDialog>{
     }
 
     void setSplashScreenClosed() {
-        if (!isGateway) return;
         lock.lock();
         try {
             mGatewayInitialised = true;
