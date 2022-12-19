@@ -48,7 +48,7 @@ public class IbcTws {
 
             startSavingTwsSettingsAutomatically();
 
-            startTwsOrGateway();
+            startGateway();
         } catch (IllegalStateException e) {
             if (e.getMessage().equalsIgnoreCase("Shutdown in progress")) {
                 // an exception with this message can occur if a STOP command is
@@ -195,20 +195,6 @@ public class IbcTws {
         Utils.logRawToConsole("------------------------------------------------------------");
     }
 
-    private static void startGateway() {
-        String[] twsArgs = new String[1];
-        twsArgs[0] = getTWSSettingsDirectory();
-        try {
-            Utils.logToConsole("Starting Gateway");
-            LoginManager.loginManager().startSession();
-            ibgateway.GWClient.main(twsArgs);
-        } catch (Throwable t) {
-            Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
-            t.printStackTrace(Utils.getErrStream());
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
-        }
-    }
-
     private static void startCommandServer() {
         MyCachedThreadPool.getInstance().execute(new CommandServer());
     }
@@ -225,30 +211,24 @@ public class IbcTws {
         }
     }
 
-    private static void startTws() {
-        if (Settings.settings().getBoolean("ShowAllTrades", false)) {
-            Utils.showTradesLogWindow();
-        }
+    private static void startGateway() {
+        Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
+        JtsIniManager.initialise(getJtsIniFilePath());
+
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
         try {
-            Utils.logToConsole("Starting TWS");
+            Utils.logToConsole("Starting Gateway");
             LoginManager.loginManager().startSession();
-            jclient.LoginFrame.main(twsArgs);
+            ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
-            Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main; TWS is not correctly installed.");
+            Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
             t.printStackTrace(Utils.getErrStream());
             Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
         }
-    }
-
-    private static void startTwsOrGateway() {
-        Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
-        JtsIniManager.initialise(getJtsIniFilePath());
-        startGateway();
 
         int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
-        if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
+        if (portNumbe;r != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
 
         if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
             (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
