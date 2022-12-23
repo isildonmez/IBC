@@ -86,7 +86,7 @@ set ERROR_MESSAGE=
 call "%IBC_PATH%\scripts\StartIBC.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
      "/TwsPath:%TWS_PATH%" "/TwsSettingsPath:%TWS_SETTINGS_PATH%" ^
 	 "/IbcPath:%IBC_PATH%" "/Config:%CONFIG%" ^
-     "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" "/FIXUser:%FIXUSERID%" "/FIXPW:%FIXPASSWORD%" ^
+     "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" ^
      "/JavaPath:%JAVA_PATH%" "/Mode:%TRADING_MODE%" "/On2FATimeout:%TWOFA_TIMEOUT_ACTION%" ^
      >> "%LOG_FILE%" 2>&1
 

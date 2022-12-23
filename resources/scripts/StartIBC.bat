@@ -29,7 +29,6 @@ echo StartIBC twsVersion [/G ^| /Gateway] [/TwsPath:twsPath]
 echo              [/TwsSettingsPath:twsSettingsPath] [/IbcPath:ibcPath]
 echo              [/Config:configfile] [/JavaPath:javaPath]
 echo              [/User:userId] [/PW:password]
-echo              [/FIXUser:fixuserId] [/FIXPW:fixpassword]
 echo              [/Mode:tradingMode]
 echo              [/On2FATimeout:2fatimeoutaction]
 echo.
@@ -59,10 +58,6 @@ echo.
 echo   userId                  IB account user id
 echo.
 echo   password                IB account password
-echo.
-echo   fixuserId               FIX account user id (only if /G or /Gateway) 
-echo.
-echo   fixpassword             FIX account password (only if /G or /Gateway) 
 echo.
 echo   tradingMode             Indicates whether the live account or the paper 
 echo                           trading account will be used. Allowed values are:
@@ -117,8 +112,6 @@ set CONFIG=
 set JAVA_PATH=
 set IB_USER_ID=
 set IB_PASSWORD=
-set FIX_USER_ID=
-set FIX_PASSWORD=
 set MODE=
 set TWOFA_TO_ACTION=
 
@@ -153,10 +146,6 @@ if /I "%ARG%" == "/G" (
 	set IB_USER_ID=%ARG:~6%
 ) else if /I "%ARG:~0,4%" == "/PW:" (
 	set IB_PASSWORD=%ARG:~4%
-) else if /I "%ARG:~0,9%" == "/FIXUSER:" (
-	set FIX_USER_ID=%ARG:~9%
-) else if /I "%ARG:~0,7%" == "/FIXPW:" (
-	set FIX_PASSWORD=%ARG:~7%
 ) else if /I "%ARG:~0,6%" == "/MODE:" (
 	set MODE=%ARG:~6%
 ) else if /I "%ARG:~0,14%" == "/ON2FATIMEOUT:" (
@@ -180,15 +169,6 @@ set PHASE=Checking supplied configuration data
 
 if defined IB_USER_ID set GOT_API_CREDENTIALS=1
 if defined IB_PASSWORD set GOT_API_CREDENTIALS=1
-if defined FIX_USER_ID set GOT_FIX_CREDENTIALS=1
-if defined FIX_PASSWORD set GOT_FIX_CREDENTIALS=1
-
-if defined GOT_FIX_CREDENTIALS (
-	if not "%PROGRAM%" == "GATEWAY" (
-		set ERROR_MESSAGE=FIX user id and FIX password are only valid for the Gateway
-		set ERROR=%E_INVALID_ARG%
-	)
-)
 
 if defined MODE (
 	if /I "%MODE%" == "LIVE" (
@@ -242,13 +222,6 @@ if defined GOT_API_CREDENTIALS (
 ) else (
 	echo /User =
 	echo /PW =
-)
-if defined GOT_FIX_CREDENTIALS (
-	echo /FIXUser = ***
-	echo /FIXPW = ***
-) else (
-	echo /FIXUser =
-	echo /FIXPW =
 )
 echo.
 
@@ -403,13 +376,7 @@ echo.
 
 set PHASE=Starting IBC
 
-if defined GOT_FIX_CREDENTIALS (
-	if defined GOT_API_CREDENTIALS (
-		set HIDDEN_CREDENTIALS="***" "***" "***" "***"
-	) else (
-		set HIDDEN_CREDENTIALS="***" "***"
-	)
-) else if defined GOT_API_CREDENTIALS (
+if defined GOT_API_CREDENTIALS (
 	set HIDDEN_CREDENTIALS="***" "***"
 )
 	
@@ -431,13 +398,7 @@ echo Starting IBC with this command:
 echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" %HIDDEN_CREDENTIALS% %MODE%
 echo.
 
-if defined GOT_FIX_CREDENTIALS (
-	if defined GOT_API_CREDENTIALS (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
-	) else (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" %MODE%
-	)
-) else if defined GOT_API_CREDENTIALS (
+if defined GOT_API_CREDENTIALS (
 		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
 ) else (
 		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" %MODE%

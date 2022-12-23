@@ -28,8 +28,6 @@ TWS_SETTINGS_PATH=
 LOG_PATH=~/ibc/logs
 TWSUSERID=
 TWSPASSWORD=
-FIXUSERID=
-FIXPASSWORD=
 JAVA_PATH=
 
 
@@ -155,16 +153,6 @@ JAVA_PATH=
 #     protected location.
 
 
-#   FIXUSERID
-#   FIXPASSWORD
-#
-#     If you are running the FIX Gateway (for which you must set FIX=yes in
-#     your IBC configuration file), and the FIX user id and password
-#     are not included in the configuration file, you can set them here.
-#     However you are strongly advised not to set them here because this file
-#     is not normally in a protected location.
-
-
 #   JAVA_PATH
 #
 #     IB's installer for TWS/Gateway includes a hidden version of Java which
@@ -199,8 +187,6 @@ export TWS_SETTINGS_PATH
 export LOG_PATH
 export TWSUSERID
 export TWSPASSWORD
-export FIXUSERID
-export FIXPASSWORD
 export JAVA_PATH
 export APP
 

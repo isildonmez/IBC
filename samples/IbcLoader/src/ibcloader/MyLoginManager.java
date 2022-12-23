@@ -33,16 +33,6 @@ public class MyLoginManager extends ibcalpha.ibc.LoginManager {
     }
 
     @Override
-    public String FIXPassword() {
-        return "";
-    }
-
-    @Override
-    public String FIXUserName() {
-        return "";
-    }
-
-    @Override
     public String IBAPIPassword() {
         return "password";
     }

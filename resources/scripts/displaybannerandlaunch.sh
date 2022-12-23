@@ -61,13 +61,13 @@ if [[ -z ${LOG_PATH+x} ]]; then
 "${IBC_PATH}/scripts/ibcstart.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_SETTINGS_PATH}" \
      "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
-     "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
+     "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" \
      "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" "--on2fatimeout=${TWOFA_TIMEOUT_ACTION}"
 else
 "${IBC_PATH}/scripts/ibcstart.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_SETTINGS_PATH}" \
      "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
-     "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
+     "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" \
      "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" "--on2fatimeout=${TWOFA_TIMEOUT_ACTION}" \
      >> "${log_file}" 2>&1 &
 fi

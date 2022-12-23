@@ -14,7 +14,6 @@ echo "ibcstart twsVersion [-g \| --gateway] [--tws-path=twsPath]"
 echo "             [--tws-settings-path=twsSettingsPath] [--ibc-path=ibcPath]"
 echo "             [--ibc-ini=ibcIni] [--java-path=javaPath]"
 echo "             [--user=userid] [--pw=password]"
-echo "             [--fix-user=fixuserid] [--fix-pw=fixpassword]"
 echo "             [--mode=tradingMode]"
 echo "             [--on2fatimeout=2fatimeoutaction]"
 echo
@@ -44,10 +43,6 @@ echo
 echo "  userid                  IB account user id"
 echo
 echo "  password                IB account password"
-echo
-echo "  fixuserid               FIX account user id (only if -g or --gateway)"
-echo
-echo "  fixpassword             FIX account password (only if -g or --gateway)"
 echo
 echo "  tradingMode             Indicates whether the live account or the paper "
 echo "                          trading account will be used. Allowed values are:"
@@ -152,10 +147,6 @@ do
 		ib_user_id=${arg:7}
 	elif [[ "${arg:0:5}" = "--pw=" ]]; then
 		ib_password=${arg:5}
-	elif [[ "${arg:0:11}" = "--fix-user=" ]]; then
-		fix_user_id=${arg:11}
-	elif [[ "${arg:0:9}" = "--fix-pw=" ]]; then
-		fix_password=${arg:9}
 	elif [[ "${arg:0:7}" = "--mode=" ]]; then
 		mode=${arg:7}
     elif [[ "${arg:0:15}" = "--on2fatimeout=" ]]; then
@@ -168,12 +159,6 @@ do
 		error_exit $E_INVALID_ARG "Invalid parameter '${arg}'"
 	fi
 done
-
-if [[ -n "${fix_user_id}" || -n "${fix_password}" ]]; then
-	if [[ ! "${program}" = "GATEWAY" ]]; then
-		error_exit ${E_INVALID_ARG} "FIX user id and FIX password are only valid for the Gateway"
-	fi
-fi
 
 mode_upper=$(echo ${mode} | tr '[:lower:]' '[:upper:]')
 if [[ -n "${mode_upper}" && ! "${mode_upper}" = "LIVE" && ! "${mode_upper}" = "PAPER" ]]; then
@@ -213,15 +198,6 @@ if [[ -z "${ib_user_id}" && -z "${ib_password}" ]]; then
 else
 	echo -e "--user = ***"
 	echo -e "--pw = ***"
-fi
-if [[ "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
-	if [[ -z "${fix_user_id}" || -z "${fix_password}" ]]; then
-		echo -e "--fix-user ="
-		echo -e "--fix-pw ="
-	else
-		echo -e "--fix-user = ***"
-		echo -e "--fix-pw = ***"
-	fi
 fi
 echo
 
@@ -419,14 +395,9 @@ echo
 
 #======================== Start IBC ===============================
 
-if [[ -n $fix_user_id || -n $fix_password ]]; then got_fix_credentials=1; fi
 if [[ -n $ib_user_id || -n $ib_password ]]; then got_api_credentials=1; fi
 
-if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
-	hidden_credentials="*** *** *** ***"
-elif  [[ -n $got_fix_credentials ]]; then
-		hidden_credentials="*** ***"
-elif [[ -n $got_api_credentials ]]; then
+if [[ -n $got_api_credentials ]]; then
 		hidden_credentials="*** ***"
 fi
 
@@ -454,11 +425,7 @@ do
 	# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
 	trap 'kill -TERM $PID' TERM INT
 
-	if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
-	elif  [[ -n $got_fix_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
-	elif [[ -n $got_api_credentials ]]; then
+	if [[ -n $got_api_credentials ]]; then
 		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
 	else
 		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" ${mode} &
