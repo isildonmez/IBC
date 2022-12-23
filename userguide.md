@@ -438,11 +438,6 @@ here is a list of the settings that you are most likely to need to change:
 |                                | you should specify the settings folder in   |
 |                                | the TWS_SETTINGS_PATH variable in the       |
 |                                | relevant start script.                      |
-| AcceptIncomingConnectionAction | It is safest to set this to `reject` and to |
-|                                | explicitly configure TWS to specify which   |
-|                                | IP addresses are allowed to connnect to the |
-|                                | API, by means of the API settings in the    |
-|                                | TWS/Gateway configuration dialog.           |
 
 
 There are two ways that IBC can locate your edited `config.ini` file.
@@ -770,11 +765,6 @@ Here are the main differences between IBC and IBController:
 
    - the setting previously called `ForceTwsApiPort` has been renamed
 	`OverrideTwsApiPort`
-
-   - the `AcceptIncomingConnectionAction` setting previously had a default of
-	`accept`. This default has now changed to `manual`, which means that the
-	user must now explicitly configure IBC to automatically accept API
-	connections from unknown computers.
 
    - the settings `PasswordEncrypted` and `FIXPasswordEncrypted` have been
     removed, as has the facility to 'encrypt' these passwords.
