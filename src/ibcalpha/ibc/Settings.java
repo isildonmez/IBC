@@ -27,6 +27,10 @@ public abstract class Settings {
         _settings = settings;
     }
 
+    public static Settings settings() {
+        return _settings;
+    }
+
     public abstract void logDiagnosticMessage();
 
 
