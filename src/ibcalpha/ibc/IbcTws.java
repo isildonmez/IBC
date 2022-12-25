@@ -25,15 +25,10 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author stevek
@@ -198,7 +193,7 @@ import java.util.concurrent.TimeUnit;
  *                                          The FIX username and password may also be supplied as the second and third command line args. In
  *                                          this case, the market data connection username and password may be supplied as the fourth and
  *                                          fifth command line args.
- * 
+ *
  * With the move to Github, the value of recording details of amendments here is questionable, and this practice has therefore been 
  * discontinued.
  * 
@@ -218,10 +213,10 @@ public class IbcTws {
     static void checkArguments(String[] args) {
         /**
          * It accepts only one argument which should be the path.
-         * 
+         *
          * where:
-         * 
-         *      <iniFile>       ::= NULL | path-and-filename-of-.ini-file 
+         *
+         *      <iniFile>       ::= NULL | path-and-filename-of-.ini-file
          * 
          */
         if (args.length != 1) {
@@ -274,38 +269,16 @@ public class IbcTws {
     private static List<WindowHandler> createWindowHandlers() {
         List<WindowHandler> windowHandlers = new ArrayList<>();
 
-        windowHandlers.add(new LoginFrameHandler());
         windowHandlers.add(new GatewayLoginFrameHandler());
-        windowHandlers.add(new MainWindowFrameHandler());
         windowHandlers.add(new GatewayMainWindowFrameHandler());
-        windowHandlers.add(new NewerVersionDialogHandler());
-        windowHandlers.add(new NewerVersionFrameHandler());
-        windowHandlers.add(new NotCurrentlyAvailableDialogHandler());
-        windowHandlers.add(new TipOfTheDayDialogHandler());
-        windowHandlers.add(new NSEComplianceFrameHandler());
-        windowHandlers.add(new PasswordExpiryWarningFrameHandler());
-        windowHandlers.add(new GlobalConfigurationDialogHandler());
-        windowHandlers.add(new ExistingSessionDetectedDialogHandler());
-        windowHandlers.add(new ApiChangeConfirmationDialogHandler());
         windowHandlers.add(new SplashFrameHandler());
 
         // this line must come before the one for SecurityCodeDialogHandler
         // because both contain an "Enter Read Only" button
         windowHandlers.add(SecondFactorAuthenticationDialogHandler.getInstance());
-        windowHandlers.add(new SecurityCodeDialogHandler());
-        
-        windowHandlers.add(new ReloginDialogHandler());
-        windowHandlers.add(new NonBrokerageAccountDialogHandler());
         windowHandlers.add(new ExitConfirmationDialogHandler());
-        windowHandlers.add(new TradingLoginHandoffDialogHandler());
         windowHandlers.add(new LoginFailedDialogHandler());
-        windowHandlers.add(new TooManyFailedLoginAttemptsDialogHandler());
-        windowHandlers.add(new ShutdownProgressDialogHandler());
-        windowHandlers.add(new BidAskLastSizeDisplayUpdateDialogHandler());
-        windowHandlers.add(new LoginErrorDialogHandler());
-        windowHandlers.add(new CryptoOrderConfirmationDialogHandler());
-        windowHandlers.add(new AutoRestartConfirmationDialog());
-                
+        windowHandlers.add(new ShutdownProgressDialogHandler());         
         
         return windowHandlers;
     }
