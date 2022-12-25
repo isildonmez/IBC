@@ -51,15 +51,6 @@ public abstract class LoginManager {
         return isRestart;
     }
     
-    boolean readonlyLoginRequired() {
-        boolean readOnly = Settings.settings().getBoolean("ReadOnlyLogin", false);
-        if readOnly {
-            Utils.logError("Read-only login not supported by Gateway");
-            return false;
-        }
-        return readOnly;
-    }
-    
     private volatile JFrame loginFrame = null;
     JFrame getLoginFrame() {
         return loginFrame;

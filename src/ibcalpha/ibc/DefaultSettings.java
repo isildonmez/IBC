@@ -66,19 +66,19 @@ public class DefaultSettings extends Settings {
 
     static String getSettingsPath(String [] args) {
         String iniPath;
-        if args[0].equalsIgnoreCase("NULL") {
+        if (args[0].equalsIgnoreCase("NULL")) {
             Utils.logError("path argument is NULL. quitting...");
             Utils.logRawToConsole("args = " +args);
             Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST, "path argument is NULL. quitting...");
-        } else {
-            iniPath = args[0];
-            File finiPath = new File(iniPath);
-            if (!finiPath.isFile() || !finiPath.exists()) {
-                Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST,  "ini file \"" + iniPath +
-                                "\" either does not exist, or is a directory.  quitting...");
-            }
-            return iniPath;
         }
+
+        iniPath = args[0];
+        File finiPath = new File(iniPath);
+        if (!finiPath.isFile() || !finiPath.exists()) {
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST,  "ini file \"" + iniPath +
+                            "\" either does not exist, or is a directory.  quitting...");
+        }
+        return iniPath;
     }
 
 
