@@ -44,7 +44,7 @@ public class DefaultTradingModeManager extends TradingModeManager {
 
     @Override
     public String getTradingMode() {
-        setTradingMode( Settings.settings().getString("TradingMode"));
+        setTradingMode( Settings.settings().getString("TradingMode", ""));
         Utils.logToConsole("trading mode from settings: tradingMode=" + tradingMode);
         return tradingMode;
     }

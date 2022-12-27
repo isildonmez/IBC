@@ -245,8 +245,6 @@ public class IbcTws {
 
             createToolkitListener();
 
-            startSavingTwsSettingsAutomatically();
-
             startGateway();
         } catch (IllegalStateException e) {
             if (e.getMessage().equalsIgnoreCase("Shutdown in progress")) {
@@ -278,7 +276,7 @@ public class IbcTws {
         windowHandlers.add(SecondFactorAuthenticationDialogHandler.getInstance());
         windowHandlers.add(new ExitConfirmationDialogHandler());
         windowHandlers.add(new LoginFailedDialogHandler());
-        windowHandlers.add(new ShutdownProgressDialogHandler());         
+        windowHandlers.add(new ShutdownProgressDialogHandler());
         
         return windowHandlers;
     }
@@ -341,35 +339,7 @@ public class IbcTws {
             Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
         }
 
-        int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
-        if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
-
-        if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
-            (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
-        }
-
-        String sendMarketDataInLots = Settings.settings().getString("SendMarketDataInLotsForUSstocks", "");
-        if (!sendMarketDataInLots.equals("")) {
-            (new ConfigurationTask(new ConfigureSendMarketDataInLotsForUSstocksTask(Settings.settings().getBoolean("SendMarketDataInLotsForUSstocks", true)))).executeAsync();
-        }
-        
-        String autoLogoffTime = Settings.settings().getString("AutoLogoffTime", "");
-        String autoRestartTime = Settings.settings().getString("AutoRestartTime", "");
-        if (!autoRestartTime.equals("")) {
-            (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto restart", autoRestartTime))).executeAsync();
-            if (!autoLogoffTime.equals("")) {
-                Utils.logToConsole("AutoLogoffTime is ignored because AutoRestartTime is also set");
-            }
-        } else if (!autoLogoffTime.equals("")) {
-            (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto logoff", autoLogoffTime))).executeAsync();
-        }
-
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
-
-    private static void startSavingTwsSettingsAutomatically() {
-        TwsSettingsSaver.getInstance().initialise();
-    }
-
 }
 

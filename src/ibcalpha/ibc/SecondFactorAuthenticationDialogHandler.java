@@ -66,14 +66,6 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
         
         return SwingUtils.titleContains(window, "Second Factor Authentication");
     }
-
-    private void doReadonlyLogin(Window window){
-        if (SwingUtils.clickButton(window, "Enter Read Only")) {
-            Utils.logToConsole("initiating read-only login.");
-        } else {
-            Utils.logError("could not initiate read-only login.");
-        }
-    }
     
     private boolean secondFactorDeviceSelectionRequired(Window window) {
         // this area appears in the Second Factor Authentication dialog when the

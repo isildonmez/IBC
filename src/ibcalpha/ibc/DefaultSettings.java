@@ -48,7 +48,7 @@ public class DefaultSettings extends Settings {
             Object[] keys = props.stringPropertyNames().toArray();
             java.util.Arrays.sort(keys);
             for (Object key : keys){
-                Utils.logRawToConsole("    " + key + "=" + getSettingSanitisedValue(key.toString()));
+                Utils.logRawToConsole("    " + key + "=" + props.getProperty(key.toString()));
             }
             Utils.logRawToConsole("End IBC Settings\n" );
         } catch (FileNotFoundException e) {
@@ -59,16 +59,12 @@ public class DefaultSettings extends Settings {
             Utils.logToConsole(e.toString());
         }
     }
-    
-    private String getSettingSanitisedValue(String key) {
-        return props.getProperty(key.toString());
-    }
 
     static String getSettingsPath(String [] args) {
         String iniPath;
         if (args[0].equalsIgnoreCase("NULL")) {
             Utils.logError("path argument is NULL. quitting...");
-            Utils.logRawToConsole("args = " +args);
+            Utils.logRawToConsole("args = " + args);
             Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST, "path argument is NULL. quitting...");
         }
 
@@ -126,65 +122,6 @@ public class DefaultSettings extends Settings {
 
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            Utils.logToConsole(
-                    "Invalid number \""
-                    + value
-                    + "\" for property \""
-                    + key
-                    + "\"");
-            return defaultValue;
-        }
-    }
-
-    /**
-     *
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    @Override
-    public char getChar(String key,
-                        String defaultValue) {
-        String value = props.getProperty(key, defaultValue);
-
-        // handle key missing or key=[empty string] in .ini file 
-        if (value == null || value.length() == 0) {
-            return defaultValue.charAt(0);
-        }
-
-        if (value.length() != 1) {
-            Utils.logToConsole(
-                    "Invalid character \""
-                    + value
-                    + "\" for property \""
-                    + key
-                    + "\"");
-        }
-
-        return value.charAt(0);
-    }
-
-    /**
-    returns the double value associated with property named key.
-    Returns defaultVAlue if there is no such property,
-    or if the property value cannot be converted to a double.
-     * @param key
-     * @param defaultValue
-     * @return 
-     */
-    @Override
-    public double getDouble(String key,
-                            double defaultValue) {
-        String value = props.getProperty(key);
-
-        // handle key missing or key=[empty string] in .ini file 
-        if (value == null || value.length() == 0) {
-            return defaultValue;
-        }
-
-        try {
-            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
             Utils.logToConsole(
                     "Invalid number \""

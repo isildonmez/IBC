@@ -45,24 +45,6 @@ public abstract class Settings {
     public abstract boolean getBoolean(String key, boolean defaultValue);
 
     /**
-     *
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    public abstract char getChar(String key, String defaultValue);
-
-    /**
-    returns the double value associated with property named key.
-    Returns defaultVAlue if there is no such property,
-    or if the property value cannot be converted to a double.
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    public abstract double getDouble(String key, double defaultValue);
-
-    /**
     returns the int value associated with property named key.
     Returns defaultValue if there is no such property,
     or if the property value cannot be converted to an int.
