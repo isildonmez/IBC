@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 
 public class DefaultLoginManager extends LoginManager {
 
-    public DefaultLoginManager(String[] args) {
+    public DefaultLoginManager() {
         fromSettings = true;
         message = "getting username and password from settings";
     }

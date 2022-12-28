@@ -22,7 +22,7 @@ public class DefaultTradingModeManager extends TradingModeManager {
 
     private String tradingMode;
 
-    public DefaultTradingModeManager(String[] args) {
+    public DefaultTradingModeManager() {
         fromSettings = true;
         message = "trading mode arg will be taken from settings";
     }

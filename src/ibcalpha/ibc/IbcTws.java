@@ -205,9 +205,9 @@ public class IbcTws {
 
     static void setupDefaultEnvironment(final String[] args) throws Exception {
         Settings.initialise(new DefaultSettings(args));
-        LoginManager.initialise(new DefaultLoginManager(args));
+        LoginManager.initialise(new DefaultLoginManager());
         MainWindowManager.initialise(new DefaultMainWindowManager());
-        TradingModeManager.initialise(new DefaultTradingModeManager(args));
+        TradingModeManager.initialise(new DefaultTradingModeManager());
     }
 
     static void checkArguments(String[] args) {
@@ -270,9 +270,6 @@ public class IbcTws {
         windowHandlers.add(new GatewayLoginFrameHandler());
         windowHandlers.add(new GatewayMainWindowFrameHandler());
         windowHandlers.add(new SplashFrameHandler());
-
-        // this line must come before the one for SecurityCodeDialogHandler
-        // because both contain an "Enter Read Only" button
         windowHandlers.add(SecondFactorAuthenticationDialogHandler.getInstance());
         windowHandlers.add(new ExitConfirmationDialogHandler());
         windowHandlers.add(new LoginFailedDialogHandler());
