@@ -23,19 +23,11 @@ public class DefaultTradingModeManager extends TradingModeManager {
     private String tradingMode;
 
     public DefaultTradingModeManager() {
-        fromSettings = true;
-        message = "trading mode arg will be taken from settings";
-    }
-
-    private void setTradingMode(String value) {
-        if (!(value.equalsIgnoreCase(TRADING_MODE_LIVE) || value.equalsIgnoreCase(TRADING_MODE_PAPER))) {
-                Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_TRADING_MODE, "Invalid Trading Mode argument or .ini file setting: " + tradingMode);
-        }
-        tradingMode = value;
+        tradingMode = TRADING_MODE_LIVE;
+        message = "trading mode is 'live'";
     }
 
     private final String message;
-    private final boolean fromSettings;
 
     @Override
     public void logDiagnosticMessage(){
@@ -44,8 +36,6 @@ public class DefaultTradingModeManager extends TradingModeManager {
 
     @Override
     public String getTradingMode() {
-        setTradingMode( Settings.settings().getString("TradingMode", ""));
-        Utils.logToConsole("trading mode from settings: tradingMode=" + tradingMode);
         return tradingMode;
     }
 

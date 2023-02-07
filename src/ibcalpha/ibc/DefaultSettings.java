@@ -43,14 +43,6 @@ public class DefaultSettings extends Settings {
             InputStream is = new BufferedInputStream(new FileInputStream(f));
             props.load(is);
             is.close();
-
-            Utils.logRawToConsole("IBC Settings:");
-            Object[] keys = props.stringPropertyNames().toArray();
-            java.util.Arrays.sort(keys);
-            for (Object key : keys){
-                Utils.logRawToConsole("    " + key + "=" + props.getProperty(key.toString()));
-            }
-            Utils.logRawToConsole("End IBC Settings\n" );
         } catch (FileNotFoundException e) {
             Utils.logToConsole("Properties file " + path + " not found");
         } catch (IOException e) {
