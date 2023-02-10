@@ -84,60 +84,11 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     }
 
     private void doLogin(final Window window) throws IbcException {
-        final boolean readOnlyLoginRequired = LoginManager.loginManager().readonlyLoginRequired();
-        
-        // this JLabel is only present for the 1016+ versions
-        final JLabel initialTitleLabel = SwingUtils.findLabel(window, "LOGIN");
-        
         GuiDeferredExecutor.instance().execute(() -> {
             final JButton loginButton = findLoginButton(window);
             LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGING_IN);
             SwingUtils.clickButton(loginButton);
         });
-
-        if (readOnlyLoginRequired && initialTitleLabel != null) {
-            // Starting with TWS 1016, there is no longer a separate Second Factor
-            // Authentication dialog. Instead, TWS replaces the Login frame's controls
-            // with the controls that used to be in the 2FA dialog (so the Login frame
-            // effectively becomes the 2FA frame). This doesn't generate any events
-            // that IBC normally handles, so it goes undetected, and thus IBC doesn't
-            // know when to click the 'Enter Read Only' button. 
-            //
-            // To avoid this problem, we make a periodic check that the JLabel that
-            // initially contained "LOGIN" has changed to "SECOND FACTOR AUTHENTICATION":
-            // when this happens, we can pass the window to the SecondFactorAuthenticationDialogHandler
-            // to be actioned.
-            //
-            // (Note that if we don't want readonly login and the 2FA prompt is handled at
-            // the IBKR Mobile app, the event generated when the Login frame closes is
-            // actually detected by the SecndFactorAuthenticationDialogHandler, so we
-            // don't need to do anything special for that.)
-
-            Utils.logToConsole("Waiting for Login frame to become SecondFactorAuthenticationDialog");
-            MyScheduledExecutorService.getInstance().schedule(
-                    () -> {
-                        checkChangeToSecondFactorAuthenticationDialog(window);
-                    }, 
-                    200, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    private void checkChangeToSecondFactorAuthenticationDialog(Window window) {
-        JLabel currentTitleLabel = SwingUtils.findLabel(window, "SECOND FACTOR AUTHENTICATION");
-        if (currentTitleLabel != null) {
-            // the login frame has now become the 2FA dialog, so invoke the 
-            // handler for that as if it had just been opened
-            Utils.logToConsole("Login frame has now become SecondFactorAuthenticationDialog");
-            TwsListener.logWindow(window, WindowEvent.WINDOW_OPENED);
-            TwsListener.logWindowStructure(window, WindowEvent.WINDOW_OPENED, true);
-            SecondFactorAuthenticationDialogHandler.getInstance().handleWindow(window, WindowEvent.WINDOW_OPENED);
-        } else {
-            MyScheduledExecutorService.getInstance().schedule(
-                    () -> {
-                        checkChangeToSecondFactorAuthenticationDialog(window);
-                    }, 
-                    200, TimeUnit.MILLISECONDS);
-        }
     }
     
     protected abstract boolean initialise(final Window window, int eventID) throws IbcException;
@@ -178,11 +129,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             }
         } else {
             JComboBox<?> tradingModeCombo;
-            if (Settings.settings().getBoolean("FIX", false)) {
-                tradingModeCombo = SwingUtils.findComboBox(window, 1);
-            } else {
-                tradingModeCombo = SwingUtils.findComboBox(window, 0);
-            }
+            tradingModeCombo = SwingUtils.findComboBox(window, 0);
 
             if (tradingModeCombo != null ) {
                 Utils.logToConsole("Setting Trading mode = " + tradingMode);

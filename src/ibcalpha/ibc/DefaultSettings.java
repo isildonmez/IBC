@@ -31,16 +31,8 @@ public class DefaultSettings extends Settings {
     private final Properties props = new Properties();
     private String path;
 
-    public DefaultSettings() {
-        load(generateDefaultIniPath());
-    }
-
     public DefaultSettings(String[] args) {
         load(getSettingsPath(args));
-    }
-
-    public DefaultSettings(String path) {
-        load(path);
     }
 
     private void load(String path) {
@@ -51,14 +43,6 @@ public class DefaultSettings extends Settings {
             InputStream is = new BufferedInputStream(new FileInputStream(f));
             props.load(is);
             is.close();
-
-            Utils.logRawToConsole("IBC Settings:");
-            Object[] keys = props.stringPropertyNames().toArray();
-            java.util.Arrays.sort(keys);
-            for (Object key : keys){
-                Utils.logRawToConsole("    " + key + "=" + getSettingSanitisedValue(key.toString()));
-            }
-            Utils.logRawToConsole("End IBC Settings\n" );
         } catch (FileNotFoundException e) {
             Utils.logToConsole("Properties file " + path + " not found");
         } catch (IOException e) {
@@ -67,68 +51,24 @@ public class DefaultSettings extends Settings {
             Utils.logToConsole(e.toString());
         }
     }
-    
-    private String getSettingSanitisedValue(String key) {
-        if (key.equalsIgnoreCase("FIXLoginId") ||
-                key.equalsIgnoreCase("FIXPassword") ||
-                key.equalsIgnoreCase("IbLoginId") ||
-                key.equalsIgnoreCase("IbPassword")) {
-            return "***";
-        }
-        return props.getProperty(key.toString());
-    }
-
-    static String generateDefaultIniPath() {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            return System.getenv("HOMEDRIVE") + 
-                    System.getenv("HOMEPATH") + File.separator + 
-                    "Documents" + File.separator + 
-                    "IBC" + File.separator + 
-                    "config.ini";
-        } else {
-            return System.getProperty("user.home") + File.separator + 
-                    "ibc" + File.separator + 
-                    "config.ini";
-        }
-    }
 
     static String getSettingsPath(String [] args) {
         String iniPath;
-        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
-            iniPath = getWorkingDirectory() + "config." + getComputerUserName() + ".ini";
-        } else if (args[0].length() == 0) {
-            iniPath = generateDefaultIniPath();
-        } else {// args.length >= 1
-            iniPath = args[0];
+        if (args[0].equalsIgnoreCase("NULL")) {
+            Utils.logError("path argument is NULL. quitting...");
+            Utils.logRawToConsole("args = " + args);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST, "path argument is NULL. quitting...");
         }
+
+        iniPath = args[0];
         File finiPath = new File(iniPath);
         if (!finiPath.isFile() || !finiPath.exists()) {
             Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST,  "ini file \"" + iniPath +
-                               "\" either does not exist, or is a directory.  quitting...");
+                            "\" either does not exist, or is a directory.  quitting...");
         }
         return iniPath;
     }
 
-    private static String getComputerUserName() {
-        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
-        int i;
-        for (i = 0; i < sb.length(); i++) {
-            char c = sb.charAt(i);
-            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-                continue;
-            }
-            if (c >= 'A' && c <= 'Z') {
-                sb.setCharAt(i, Character.toLowerCase(c));
-            } else {
-                sb.setCharAt(i, '_');
-            }
-        }
-        return sb.toString();
-    }
-
-    private static String getWorkingDirectory() {
-        return System.getProperty("user.dir") + File.separator;
-    }
 
     @Override
     public void logDiagnosticMessage(){
@@ -174,65 +114,6 @@ public class DefaultSettings extends Settings {
 
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            Utils.logToConsole(
-                    "Invalid number \""
-                    + value
-                    + "\" for property \""
-                    + key
-                    + "\"");
-            return defaultValue;
-        }
-    }
-
-    /**
-     *
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    @Override
-    public char getChar(String key,
-                        String defaultValue) {
-        String value = props.getProperty(key, defaultValue);
-
-        // handle key missing or key=[empty string] in .ini file 
-        if (value == null || value.length() == 0) {
-            return defaultValue.charAt(0);
-        }
-
-        if (value.length() != 1) {
-            Utils.logToConsole(
-                    "Invalid character \""
-                    + value
-                    + "\" for property \""
-                    + key
-                    + "\"");
-        }
-
-        return value.charAt(0);
-    }
-
-    /**
-    returns the double value associated with property named key.
-    Returns defaultVAlue if there is no such property,
-    or if the property value cannot be converted to a double.
-     * @param key
-     * @param defaultValue
-     * @return 
-     */
-    @Override
-    public double getDouble(String key,
-                            double defaultValue) {
-        String value = props.getProperty(key);
-
-        // handle key missing or key=[empty string] in .ini file 
-        if (value == null || value.length() == 0) {
-            return defaultValue;
-        }
-
-        try {
-            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
             Utils.logToConsole(
                     "Invalid number \""

@@ -49,15 +49,12 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
     @Override
     public void handleWindow(Window window, int eventID) {
         if (eventID == WindowEvent.WINDOW_OPENED) {
-            if (LoginManager.loginManager().readonlyLoginRequired()) {
-                doReadonlyLogin(window);
-            } else if (secondFactorDeviceSelectionRequired(window)) {
+            if (secondFactorDeviceSelectionRequired(window)) {
                 selectSecondFactorDevice(window);
             } else {
                 LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
             }
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
-            if (LoginManager.loginManager().readonlyLoginRequired()) return;
             LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
         }
     }
@@ -68,14 +65,6 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
         if (! (window instanceof JDialog || window instanceof JFrame)) return false;
         
         return SwingUtils.titleContains(window, "Second Factor Authentication");
-    }
-
-    private void doReadonlyLogin(Window window){
-        if (SwingUtils.clickButton(window, "Enter Read Only")) {
-            Utils.logToConsole("initiating read-only login.");
-        } else {
-            Utils.logError("could not initiate read-only login.");
-        }
     }
     
     private boolean secondFactorDeviceSelectionRequired(Window window) {

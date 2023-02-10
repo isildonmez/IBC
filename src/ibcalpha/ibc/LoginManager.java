@@ -28,17 +28,9 @@ public abstract class LoginManager {
 
     private static LoginManager _LoginManager;
 
-    static {
-        _LoginManager = new DefaultLoginManager();
-    }
-
     public static void initialise(LoginManager loginManager){
         if (loginManager == null) throw new IllegalArgumentException("loginManager");
         _LoginManager = loginManager;
-    }
-
-    public static void setDefault() {
-        _LoginManager = new DefaultLoginManager();
     }
 
     public static LoginManager loginManager() {
@@ -57,15 +49,6 @@ public abstract class LoginManager {
     private boolean isRestart;
     boolean getIsRestart() {
         return isRestart;
-    }
-    
-    boolean readonlyLoginRequired() {
-        boolean readOnly = Settings.settings().getBoolean("ReadOnlyLogin", false);
-        if (readOnly && MainWindowManager.mainWindowManager().isGateway()) {
-            Utils.logError("Read-only login not supported by Gateway");
-            return false;
-        }
-        return readOnly;
     }
     
     private volatile JFrame loginFrame = null;
@@ -197,10 +180,6 @@ public abstract class LoginManager {
     }
 
     public abstract void logDiagnosticMessage();
-
-    public abstract String FIXPassword();
-
-    public abstract String FIXUserName();
 
     public abstract String IBAPIPassword();
 

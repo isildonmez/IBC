@@ -26,27 +26,16 @@ class CommandDispatcher
         implements Runnable {
 
     private final CommandChannel mChannel;
-    private final boolean mIsGateway;
 
-    CommandDispatcher(CommandChannel channel, boolean isGateway) {
+    CommandDispatcher(CommandChannel channel) {
         mChannel = channel;
-        mIsGateway = isGateway;
     }
 
     @Override public void run() {
         String cmd = mChannel.getCommand();
         while (cmd != null) {
-            if (cmd.equalsIgnoreCase("EXIT")) {
-                mChannel.writeAck("Goodbye");
-                break;
-            } else if (cmd.equalsIgnoreCase("STOP")) {
+            if (cmd.equalsIgnoreCase("STOP")) {
                 handleStopCommand();
-            } else if (cmd.equalsIgnoreCase("ENABLEAPI")) {
-                handleEnableAPICommand();
-            } else if (cmd.equalsIgnoreCase("RECONNECTDATA")) {
-            	handleReconnectDataCommand();
-            } else if (cmd.equalsIgnoreCase("RECONNECTACCOUNT")) {
-            	handleReconnectAccountCommand();
             } else {
                 handleInvalidCommand(cmd);
             }
@@ -61,46 +50,8 @@ class CommandDispatcher
         Utils.logError("CommandServer: invalid command received: " + cmd);
     }
 
-    private void handleEnableAPICommand() {
-        if (mIsGateway) {
-            mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
-            return;
-        }
-
-        // run on the current thread
-        (new ConfigurationTask(new EnableApiTask(mChannel))).execute();
-   }
-
-    private void handleReconnectDataCommand() {
-        JFrame jf = MainWindowManager.mainWindowManager().getMainWindow(1, TimeUnit.MILLISECONDS);
-
-        int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
-        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F, KeyEvent.CHAR_UNDEFINED);
-        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), modifiers, KeyEvent.VK_UNDEFINED, 'F' );
-        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F,  KeyEvent.CHAR_UNDEFINED );
-        jf.dispatchEvent(pressed);
-        jf.dispatchEvent(typed);
-        jf.dispatchEvent(released);
-  
-        mChannel.writeAck("");
-   }
-
-    private void handleReconnectAccountCommand() {
-        JFrame jf = MainWindowManager.mainWindowManager().getMainWindow();
-
-        int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
-        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R, KeyEvent.CHAR_UNDEFINED);
-        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), modifiers, KeyEvent.VK_UNDEFINED, 'R' );
-        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R,  KeyEvent.CHAR_UNDEFINED );
-        jf.dispatchEvent(pressed);
-        jf.dispatchEvent(typed);
-        jf.dispatchEvent(released);
-
-        mChannel.writeAck("");
-    }
-
     private void handleStopCommand() {
-        (new StopTask(mChannel, mIsGateway)).run();     // run on the current thread
+        (new StopTask(mChannel)).run();     // run on the current thread
     }
 
 }

@@ -27,10 +27,6 @@ public abstract class Settings {
         _settings = settings;
     }
 
-    public static void setDefault() {
-        _settings = new DefaultSettings();
-    }
-
     public static Settings settings() {
         return _settings;
     }
@@ -47,24 +43,6 @@ public abstract class Settings {
      * @return
      */
     public abstract boolean getBoolean(String key, boolean defaultValue);
-
-    /**
-     *
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    public abstract char getChar(String key, String defaultValue);
-
-    /**
-    returns the double value associated with property named key.
-    Returns defaultVAlue if there is no such property,
-    or if the property value cannot be converted to a double.
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    public abstract double getDouble(String key, double defaultValue);
 
     /**
     returns the int value associated with property named key.

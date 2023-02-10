@@ -27,7 +27,7 @@ public class IbcGateway {
             Thread.setDefaultUncaughtExceptionHandler(new ibcalpha.ibc.UncaughtExceptionHandler());
         }
         checkArguments(args);
-        setupDefaultEnvironment(args, true);
+        setupDefaultEnvironment(args);
         IbcTws.load();
     }
 

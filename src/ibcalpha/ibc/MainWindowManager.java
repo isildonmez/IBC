@@ -25,17 +25,9 @@ public abstract class MainWindowManager {
 
     private static MainWindowManager _mainWindowManager;
 
-    static {
-        _mainWindowManager = new DefaultMainWindowManager();
-    }
-
     public static void initialise(MainWindowManager mainWindowManager){
         if (mainWindowManager == null) throw new IllegalArgumentException("mainWindowManager");
         _mainWindowManager = mainWindowManager;
-    }
-
-    public static void setDefault() {
-        _mainWindowManager = new DefaultMainWindowManager();
     }
 
     public static MainWindowManager mainWindowManager() {
@@ -84,8 +76,6 @@ public abstract class MainWindowManager {
      * the method has been called from the Swing event dispatch thread
      */
     public abstract JFrame getMainWindow() throws IllegalStateException;
-
-    public abstract boolean isGateway();
 
     public abstract void setMainWindow(JFrame window);
 
